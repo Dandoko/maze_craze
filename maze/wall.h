@@ -5,7 +5,7 @@
 
 class Wall: public Cell {
 private:
-	bool isBorder;
+	bool m_IsBorder;
 public:
 	Wall();
 	Wall(bool isBorder);

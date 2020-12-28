@@ -5,8 +5,8 @@
 
 class Timer {
 private:
-	std::chrono::system_clock::time_point m_startTime;
-	std::chrono::duration<float> m_deltaTime;
+	std::chrono::system_clock::time_point m_StartTime;
+	std::chrono::duration<float> m_DeltaTime;
 
 public:
 	Timer();

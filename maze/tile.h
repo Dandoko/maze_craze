@@ -6,9 +6,10 @@
 
 class Tile {
 private:
-	Cell* cell;
+	Cell* m_Cell;
 public:
 	Tile();
+	Tile(const Tile&) = delete;
 	Tile(bool isBorder);
 	virtual ~Tile();
 

@@ -7,13 +7,13 @@ using namespace std;
 Cell::Cell() { }
 
 Cell::Cell(char shape) {
-	this->shape = shape;
+	m_Shape = shape;
 }
 
 Cell::~Cell() { }
 
 void Cell::printCell() {
-	cout << shape;
+	cout << m_Shape << " ";
 }
 
 bool Cell::isWall() {

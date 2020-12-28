@@ -141,9 +141,10 @@
     <ClCompile Include="cell.cpp" />
     <ClCompile Include="loop.cpp" />
     <ClCompile Include="manager.cpp" />
+    <ClCompile Include="maze.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="maze.cpp" />
+    <ClCompile Include="board.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="wall.cpp" />
   </ItemGroup>
@@ -151,8 +152,9 @@
     <ClInclude Include="cell.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="loop.h" />
-    <ClInclude Include="timer.h" />
     <ClInclude Include="maze.h" />
+    <ClInclude Include="timer.h" />
+    <ClInclude Include="board.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="wall.h" />
   </ItemGroup>

@@ -5,16 +5,16 @@
 using namespace std;
 
 Tile::Tile() {
-	cell = NULL;
+	m_Cell = NULL;
 }
 
 Tile::Tile(bool isBorder) {
 	Wall* wall = new Wall(isBorder);
-	cell = (Cell*)wall;
+	m_Cell = (Cell*)wall;
 }
 
 Tile::~Tile() { }
 
 Cell* Tile::getCell() {
-	return cell;
+	return m_Cell;
 }

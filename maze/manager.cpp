@@ -7,7 +7,8 @@ using namespace std;
 Manager* Manager::sManagerInstance = NULL;
 
 Manager::Manager() {
-	loop = new Loop();
+	m_Maze = new Maze();
+	m_Loop = new Loop(m_Maze);
 }
 
 Manager::~Manager() {}
@@ -24,5 +25,5 @@ void Manager::destoryManagerInstance() {
 }
 
 void Manager::start() {
-	loop->start();
+	m_Loop->start();
 }

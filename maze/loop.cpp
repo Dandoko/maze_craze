@@ -6,13 +6,15 @@
 
 using namespace std;
 
-Loop::Loop() {
-	timer = new Timer();
-	isRunning = false;
+Loop::Loop(Maze* maze) {
+	m_Timer = new Timer();
+	m_Maze = maze;
+	m_IsRunning = false;
 }
 
 Loop::~Loop() {
-	delete timer;
+	delete m_Timer;
+	m_Timer = NULL;
 }
 
 void Loop::start() {
@@ -20,9 +22,9 @@ void Loop::start() {
 }
 
 void Loop::run() {
-	isRunning = true;
+	m_IsRunning = true;
 
-	timer->resetStartTime();
+	m_Timer->resetStartTime();
 	float elaspedTime = 0.0f;
 	bool render = false;
 
@@ -30,13 +32,13 @@ void Loop::run() {
 	int frames = 0;
 	int fps = 0;
 
-	while (isRunning) {
+	while (m_IsRunning) {
 		render = false;
 
-		timer->updateDeltaTime();
-		timer->resetStartTime();
-		elaspedTime += timer->getDeltaTime();
-		frameTime += timer->getDeltaTime();
+		m_Timer->updateDeltaTime();
+		m_Timer->resetStartTime();
+		elaspedTime += m_Timer->getDeltaTime();
+		frameTime += m_Timer->getDeltaTime();
 
 		while (elaspedTime >= MAX_FRAME_RATE) {
 			elaspedTime -= MAX_FRAME_RATE;
@@ -62,13 +64,7 @@ void Loop::run() {
 			SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursorPosition);
 
 			// Render Maze
-
-			for (int i = 0; i < 15; i++) {
-				for (int j = 0; j < 15; j++) {
-					cout << "X";
-				}
-				cout << endl;
-			}
+			m_Maze->getBoard()->printMaze();
 		}
 		else {
 			this_thread::sleep_for(1ms);

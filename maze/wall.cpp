@@ -7,7 +7,7 @@ using namespace std;
 Wall::Wall() : Cell(' ') { }
 
 Wall::Wall(bool isBorder) : Cell('X') {
-	this->isBorder = isBorder;
+	m_IsBorder = isBorder;
 }
 
 Wall::~Wall() {}
@@ -17,5 +17,5 @@ bool Wall::isWall() {
 }
 
 bool Wall::getIsBorder() {
-	return isBorder;
+	return m_IsBorder;
 }

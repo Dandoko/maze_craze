@@ -2,11 +2,13 @@
 #define MANAGER_H
 
 #include "loop.h"
+#include "maze.h"
 
 class Manager {
 private:
 	static Manager* sManagerInstance;
-	Loop* loop;
+	Maze* m_Maze;
+	Loop* m_Loop;
 
 	Manager();
 	Manager(const Manager&) = delete;

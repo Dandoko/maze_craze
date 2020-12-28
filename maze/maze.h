@@ -1,22 +1,17 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-#include "tile.h"
+#include "board.h"
 
 class Maze {
 private:
-	int rowSize;
-	int colSize;
-
-	Tile*** maze;
-
+	Board* m_Board;
 public:
 	Maze();
-	virtual ~Maze();
+	Maze(const Maze&) = delete;
+	~Maze();
 
-	void printMaze();
-	void generateMaze();
-
+	Board* getBoard();
 };
 
 #endif

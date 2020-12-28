@@ -3,9 +3,10 @@
 
 class Cell {
 private:
-	char shape;
+	char m_Shape;
 public:
 	Cell();
+	Cell(const Cell&) = delete;
 	Cell(char shape);
 	virtual ~Cell();
 
