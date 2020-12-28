@@ -3,12 +3,13 @@
 
 #include "cell.h"
 
-class Wall: public Cell {
+class Wall : public Cell {
 private:
 	bool m_IsBorder;
 public:
 	Wall();
 	Wall(bool isBorder);
+	Wall(const Wall&) = delete;
 	virtual ~Wall();
 
 	bool isWall();

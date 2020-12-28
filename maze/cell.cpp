@@ -19,3 +19,7 @@ void Cell::printCell() {
 bool Cell::isWall() {
 	return false;
 }
+
+bool Cell::isPath() {
+	return false;
+}

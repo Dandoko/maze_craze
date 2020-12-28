@@ -9,7 +9,7 @@ private:
 public:
 	Maze();
 	Maze(const Maze&) = delete;
-	~Maze();
+	virtual ~Maze();
 
 	Board* getBoard();
 };

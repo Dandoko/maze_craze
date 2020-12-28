@@ -6,13 +6,14 @@ private:
 	char m_Shape;
 public:
 	Cell();
-	Cell(const Cell&) = delete;
 	Cell(char shape);
+	Cell(const Cell&) = delete;
 	virtual ~Cell();
 
 	void printCell();
 
 	virtual bool isWall();
+	virtual bool isPath();
 };
 
 #endif

@@ -12,7 +12,7 @@ private:
 
 	Manager();
 	Manager(const Manager&) = delete;
-	~Manager();
+	virtual ~Manager();
 
 public:
 	static Manager* getManagerInstance();

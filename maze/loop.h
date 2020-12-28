@@ -17,7 +17,7 @@ private:
 public:
 	Loop(Maze* maze);
 	Loop(const Loop&) = delete;
-	~Loop();
+	virtual ~Loop();
 
 	void start();
 };

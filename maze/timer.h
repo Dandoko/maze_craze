@@ -11,7 +11,7 @@ private:
 public:
 	Timer();
 	Timer(const Timer&) = delete;
-	~Timer();
+	virtual ~Timer();
 
 	void resetStartTime();
 
