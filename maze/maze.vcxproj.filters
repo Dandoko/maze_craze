@@ -30,18 +30,36 @@
     <ClCompile Include="tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="loop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="maze.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="loop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

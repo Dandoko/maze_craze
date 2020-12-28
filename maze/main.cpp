@@ -1,13 +1,12 @@
 #include <iostream>
 
-#include "maze.h"
-
-using namespace std;
+#include "manager.h"
 
 int main() {
+	Manager* manager = Manager::getManagerInstance();
 
-	Maze *maze = new Maze();
-	maze->generateMaze();
+	manager->start();
 
+	Manager::destoryManagerInstance();
 	return 0;
 }
