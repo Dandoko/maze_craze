@@ -13,7 +13,7 @@ KeyboardInput::~KeyboardInput() {}
 
 void KeyboardInput::update() {
 	if (GetAsyncKeyState(VK_SPACE)) {
-		m_SpacebarClicked = !m_SpacebarClicked;
+		m_SpacebarClicked = true;
 	}
 }
 

@@ -11,8 +11,8 @@
 using namespace std;
 
 Board::Board() {
-	m_RowSize = 11;
-	m_ColSize = 11;
+	m_RowSize = BOARD_ROW_SIZE;
+	m_ColSize = BOARD_COL_SIZE;
 
 	m_Maze = new Tile** [m_RowSize];
 	for (int i = 0; i < m_RowSize; i++) {
@@ -114,18 +114,21 @@ void Board::resetMaze() {
 }
 
 void Board::generateMaze() {
-	recursiveBacktracker();
+	randomizedDFS();
+	//randomizedPrim();
 }
 
 // @see https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation
-void Board::recursiveBacktracker() {
+void Board::randomizedDFS() {
 	stack<Tile*> visited;
 
 	// Choose the initial cell, mark it as visited and push it to the stack
 	Tile* initialTile = m_Maze[m_RowSize / 2][m_ColSize / 2];
 	visited.push(initialTile);
+
 	// While the stack is not empty
 	while (!visited.empty()) {
+
 		// Pop a cell from the stack and make it a current cell
 		Tile* curTile = visited.top();
 		visited.pop();
@@ -185,6 +188,7 @@ Tile** Board::getUnvisitedNeighbour(Tile* curTile) {
 	Tile** neighbours = new Tile * [2];
 	Tile* unvisitedNeighbour = NULL;
 	Tile* betweenNeighbour = NULL;
+
 	while (!unvisitedNeighbour) {
 		int xOffset = roundOffset(rand() % (MAX_OFFSET - MIN_OFFSET + 1) + MIN_OFFSET);
 		int yOffset = roundOffset(rand() % (MAX_OFFSET - MIN_OFFSET + 1) + MIN_OFFSET);
@@ -211,4 +215,90 @@ int Board::roundOffset(int offset) {
 	if (offset > 1) return 2;
 	else if (offset < -1) return -2;
 	return 0;
+}
+
+// @see https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm
+void Board::randomizedPrim() {
+	// Start with a grid full of walls.
+	vector<Tile*> wallList;
+
+	// Pick a cell, mark it as part of the maze. Add the walls of the cell to the wall list.
+	Tile* initialTile = m_Maze[m_RowSize / 2][m_ColSize / 2];
+	initialTile->getCell()->setIsVisited(true);
+	addWalls(initialTile, wallList);
+	m_PathRow[m_PathLength] = initialTile->getY();
+	m_PathCol[m_PathLength] = initialTile->getX();
+	m_PathLength++;
+	
+	// While there are walls in the list :
+	while (wallList.size() > 0) {
+		// Pick a random wall from the list. If only one of the two cells that the wall divides is visited, then :
+		int randomIndex = rand() % wallList.size();
+		Tile* randomWall = wallList.at(randomIndex);
+
+		Tile* univisitedWall = findUnvisitedWall(randomWall);
+		if (univisitedWall) {
+
+			// Make the wall a passage and mark the unvisited cell as part of the maze.
+			randomWall->getCell()->setIsVisited(true);
+			m_PathRow[m_PathLength] = randomWall->getY();
+			m_PathCol[m_PathLength] = randomWall->getX();
+			m_PathLength++;
+
+			univisitedWall->getCell()->setIsVisited(true);
+			m_PathRow[m_PathLength] = univisitedWall->getY();
+			m_PathCol[m_PathLength] = univisitedWall->getX();
+			m_PathLength++;
+
+			// Add the neighboring walls of the cell to the wall list.
+			addWalls(univisitedWall, wallList);
+		}
+
+		// Remove the wall from the list.
+		wallList.erase(wallList.begin() + randomIndex);
+	}
+}
+
+void Board::addWalls(Tile* curTile, vector<Tile*>& wallList) {
+	for (int i = -1; i <= 1; i ++) {
+		for (int j = -1; j <= 1; j ++) {
+			if (i != 0 || j != 0) {
+				if (!(i && j)) {
+					if (curTile->getX() + j >= 1 && curTile->getY() + i >= 1 &&
+						curTile->getX() + j < m_ColSize - 1 && curTile->getY() + i < m_RowSize - 1 &&
+						m_Maze[curTile->getY() + i][curTile->getX() + j]->getCell()->isWall()) {
+
+						Tile* curWall = m_Maze[curTile->getY() + i][curTile->getX() + j];
+						wallList.push_back(curWall);
+					}
+				}
+			}
+		}
+	}
+}
+
+Tile* Board::findUnvisitedWall(Tile* curTile) {
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			if (!(i == 0 && j == 0)) {
+				if (!(i && j)) {
+					if (curTile->getX() + j >= 1 && curTile->getY() + i >= 1 &&
+						curTile->getX() + j < m_ColSize - 1 && curTile->getY() + i < m_RowSize - 1 &&
+						m_Maze[curTile->getY() + i][curTile->getX() + j]->getCell()->getIsVisited()) {
+
+						int oppositeOffsetI = i * -1;
+						int oppositeOffsetJ = j * -1;
+						if (curTile->getX() + oppositeOffsetJ >= 1 && curTile->getY() + oppositeOffsetI >= 1 &&
+							curTile->getX() + oppositeOffsetJ < m_ColSize - 1 && curTile->getY() + oppositeOffsetI < m_RowSize - 1) {
+							if (!m_Maze[curTile->getY() + oppositeOffsetI][curTile->getX() + oppositeOffsetJ]->getCell()->getIsVisited()) {
+								return m_Maze[curTile->getY() + oppositeOffsetI][curTile->getX() + oppositeOffsetJ];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return NULL;
 }

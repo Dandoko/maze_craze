@@ -1,6 +1,11 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <vector>
+
+#define BOARD_ROW_SIZE 15
+#define BOARD_COL_SIZE 15
+
 #define MAX_OFFSET 2
 #define MIN_OFFSET -2
 
@@ -13,6 +18,9 @@ private:
 
 	Tile*** m_Maze;
 
+	//=========================================================================
+	// Randomized DFS (Recursive Backtracker)
+	//=========================================================================
 	int m_PathRow[500];
 	int m_PathCol[500];
 	int m_PathLength;
@@ -28,11 +36,21 @@ public:
 	void update();
 	void resetMaze();
 	void generateMaze();
-	void recursiveBacktracker();
+
+	//=========================================================================
+	// Randomized DFS (Recursive Backtracker)
+	//=========================================================================
+	void randomizedDFS();
 	bool hasUnvisitedNeighbour(Tile* curTile);
 	Tile** getUnvisitedNeighbour(Tile* curTile);
-private:
 	int roundOffset(int offset);
+
+	//=========================================================================
+	// Randomized Prim
+	//=========================================================================
+	void randomizedPrim();
+	void addWalls(Tile* curTile, std::vector<Tile*>& wallList);
+	Tile* findUnvisitedWall(Tile* curTile);
 };
 
 #endif
