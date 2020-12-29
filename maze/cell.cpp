@@ -4,16 +4,23 @@
 
 using namespace std;
 
-Cell::Cell() { }
-
 Cell::Cell(char shape) {
 	m_Shape = shape;
+	m_IsVisited = false;
 }
 
 Cell::~Cell() { }
 
 void Cell::printCell() {
 	cout << m_Shape << " ";
+}
+
+bool Cell::getIsVisited() {
+	return m_IsVisited;
+}
+
+void Cell::setIsVisited(bool isVisited) {
+	m_IsVisited = isVisited;
 }
 
 bool Cell::isWall() {

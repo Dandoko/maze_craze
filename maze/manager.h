@@ -1,8 +1,8 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
-#include "loop.h"
-#include "maze.h"
+class Loop;
+class Maze;
 
 class Manager {
 private:
@@ -19,6 +19,9 @@ public:
 	static void destoryManagerInstance();
 
 	void start();
+
+	void update();
+	void render();
 };
 
 #endif

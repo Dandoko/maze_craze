@@ -1,7 +1,7 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-#include "board.h"
+class Board;
 
 class Maze {
 private:
@@ -12,6 +12,9 @@ public:
 	virtual ~Maze();
 
 	Board* getBoard();
+
+	void update();
+	void render();
 };
 
 #endif
