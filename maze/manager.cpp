@@ -3,6 +3,7 @@
 #include "manager.h"
 #include "maze.h"
 #include "loop.h"
+#include "keyboard_input.h"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ Manager* Manager::sManagerInstance = NULL;
 Manager::Manager() {
 	m_Maze = new Maze();
 	m_Loop = new Loop(this);
+	m_KeyboardInput = new KeyboardInput();
 }
 
 Manager::~Manager() {}
@@ -31,7 +33,8 @@ void Manager::start() {
 }
 
 void Manager::update() {
-	m_Maze->update();
+	if (m_KeyboardInput->getSpacebarClicked()) m_Maze->update();
+	m_KeyboardInput->update();
 }
 
 void Manager::render() {

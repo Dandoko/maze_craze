@@ -4,7 +4,9 @@
 
 using namespace std;
 
-Wall::Wall() : Cell(' ') { }
+Wall::Wall() : Cell(' ') {
+	m_IsBorder = false;
+}
 
 Wall::Wall(bool isBorder) : Cell('X') {
 	m_IsBorder = isBorder;

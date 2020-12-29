@@ -34,8 +34,6 @@ void Loop::run() {
 	int frames = 0;
 	int fps = 0;
 
-	int testCount = 0;
-
 	while (m_IsRunning) {
 		render = false;
 
@@ -49,18 +47,14 @@ void Loop::run() {
 			render = true;
 
 			// Update game
-			if (testCount > 1) {
-				m_Manager->update();
-			}
+			m_Manager->update();
 
 			if (frameTime >= 1.0f) {
 				frameTime = 0;
 				fps = frames;
 				frames = 0;
 				//cout << "FPS: " << fps << endl;
-				testCount++;
 			}
-
 		}
 
 		if (render) {

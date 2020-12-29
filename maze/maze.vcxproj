@@ -142,6 +142,7 @@
     <ClCompile Include="creator.cpp" />
     <ClCompile Include="empty_path.cpp" />
     <ClCompile Include="end_path.cpp" />
+    <ClCompile Include="keyboard_input.cpp" />
     <ClCompile Include="loop.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="maze.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="creator.h" />
     <ClInclude Include="empty_path.h" />
     <ClInclude Include="end_path.h" />
+    <ClInclude Include="keyboard_input.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="loop.h" />
     <ClInclude Include="maze.h" />

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Solver::Solver(char shape) : Unit(shape) {
+Solver::Solver() : Unit('S') {
 
 }
 

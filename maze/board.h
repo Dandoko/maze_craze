@@ -26,6 +26,7 @@ public:
 
 	void printMaze();
 	void update();
+	void resetMaze();
 	void generateMaze();
 	void recursiveBacktracker();
 	bool hasUnvisitedNeighbour(Tile* curTile);

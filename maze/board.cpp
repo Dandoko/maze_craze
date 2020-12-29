@@ -5,6 +5,8 @@
 #include "tile.h"
 #include "wall.h"
 #include "empty_path.h"
+#include "unit.h"
+#include "creator.h"
 
 using namespace std;
 
@@ -19,16 +21,8 @@ Board::Board() {
 
 	for (int i = 0; i < m_RowSize; i++) {
 		for (int j = 0; j < m_ColSize; j++) {
-			if (false) {
-
-			}
-			else if (false) {
-
-			}
-			else {
-				bool isBorder = (i == 0 || i == m_RowSize - 1 || j == 0 || j == m_ColSize - 1) ? true : false;
-				m_Maze[i][j] = new Tile(new Wall(isBorder), j, i);
-			}
+			bool isBorder = (i == 0 || i == m_RowSize - 1 || j == 0 || j == m_ColSize - 1) ? true : false;
+			m_Maze[i][j] = new Tile(new Wall(isBorder), j, i);
 		}
 	}
 
@@ -59,11 +53,11 @@ void Board::printMaze() {
 	for (int i = 0; i < m_RowSize; i++) {
 		cout << "   ";
 		for (int j = 0; j < m_ColSize; j++) {
-			if (m_Maze[i][j]->getCell()) {
-				m_Maze[i][j]->getCell()->printCell();
+			if (m_Maze[i][j]->getUnit()) {
+				m_Maze[i][j]->getUnit()->printUnit();
 			}
-			else {
-				cout << "  ";
+			else if (m_Maze[i][j]->getCell()) {
+				m_Maze[i][j]->getCell()->printCell();
 			}
 		}
 		cout << endl;
@@ -79,9 +73,44 @@ void Board::update() {
 		if (m_PathLength > 0 && m_CurPathIndex < m_PathLength) {
 			delete m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->getCell();
 			m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->setCell(new EmptyPath());
+			m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->setUnit(new Creator());
+
+			if (m_CurPathIndex > 0) {
+				delete m_Maze[m_PathRow[m_CurPathIndex - 1]][m_PathCol[m_CurPathIndex - 1]]->getUnit();
+				m_Maze[m_PathRow[m_CurPathIndex - 1]][m_PathCol[m_CurPathIndex - 1]]->setUnit(NULL);
+			}
+			
+			if (m_CurPathIndex + 1 == m_PathLength) {
+				delete m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->getUnit();
+				m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->setUnit(NULL);
+			}
+
 			m_CurPathIndex++;
 		}
+		else {
+			resetMaze();
+		}
 	}
+}
+
+void Board::resetMaze() {
+	for (int i = 0; i < m_RowSize; i++) {
+		for (int j = 0; j < m_ColSize; j++) {
+			delete m_Maze[i][j]->getUnit();
+			m_Maze[i][j]->setUnit(NULL);
+
+			if (!m_Maze[i][j]->getCell()->isWall()) {
+				delete m_Maze[i][j]->getCell();
+
+				bool isBorder = (i == 0 || i == m_RowSize - 1 || j == 0 || j == m_ColSize - 1) ? true : false;
+				m_Maze[i][j]->setCell(new Wall(isBorder));
+			}
+		}
+	}
+
+	m_PathLength = 0;
+	m_CurPathIndex = 0;
+	m_PathCreated = false;
 }
 
 void Board::generateMaze() {
@@ -93,7 +122,7 @@ void Board::recursiveBacktracker() {
 	stack<Tile*> visited;
 
 	// Choose the initial cell, mark it as visited and push it to the stack
-	Tile* initialTile = m_Maze[1][1];
+	Tile* initialTile = m_Maze[m_RowSize / 2][m_ColSize / 2];
 	visited.push(initialTile);
 	// While the stack is not empty
 	while (!visited.empty()) {

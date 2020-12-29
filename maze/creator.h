@@ -6,7 +6,7 @@
 class Creator : public Unit {
 private:
 public:
-	Creator(char shape);
+	Creator();
 	Creator(const Creator&) = delete;
 	virtual ~Creator();
 

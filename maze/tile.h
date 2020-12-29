@@ -20,6 +20,9 @@ public:
 	Cell* getCell();
 	void setCell(Cell* cell);
 
+	Unit* getUnit();
+	void setUnit(Unit* unit);
+
 	int getX();
 	int getY();
 };

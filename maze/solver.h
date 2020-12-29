@@ -6,7 +6,7 @@
 class Solver : public Unit {
 private:
 public:
-	Solver(char shape);
+	Solver();
 	Solver(const Solver&) = delete;
 	virtual ~Solver();
 

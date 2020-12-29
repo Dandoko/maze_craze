@@ -3,12 +3,14 @@
 
 class Loop;
 class Maze;
+class KeyboardInput;
 
 class Manager {
 private:
 	static Manager* sManagerInstance;
 	Maze* m_Maze;
 	Loop* m_Loop;
+	KeyboardInput* m_KeyboardInput;
 
 	Manager();
 	Manager(const Manager&) = delete;

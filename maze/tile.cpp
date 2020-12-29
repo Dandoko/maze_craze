@@ -30,6 +30,14 @@ void Tile::setCell(Cell* cell) {
 	m_Cell = cell;
 }
 
+Unit* Tile::getUnit() {
+	return m_Unit;
+}
+
+void Tile::setUnit(Unit* unit) {
+	m_Unit = unit;
+}
+
 int Tile::getX() {
 	return m_X;
 }
