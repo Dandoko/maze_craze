@@ -18,12 +18,8 @@ private:
 
 	Tile*** m_Maze;
 
-	//=========================================================================
-	// Randomized DFS (Recursive Backtracker)
-	//=========================================================================
-	int m_PathRow[500];
-	int m_PathCol[500];
-	int m_PathLength;
+	std::vector<int> m_PathRow;
+	std::vector<int> m_PathCol;
 	int m_CurPathIndex;
 	bool m_PathCreated;
 
@@ -46,11 +42,16 @@ public:
 	int roundOffset(int offset);
 
 	//=========================================================================
-	// Randomized Prim
+	// Randomized Prim's Algorithm
 	//=========================================================================
 	void randomizedPrim();
 	void addWalls(Tile* curTile, std::vector<Tile*>& wallList);
 	Tile* findUnvisitedWall(Tile* curTile);
+
+	//=========================================================================
+	// Wilson's Algorithm
+	//=========================================================================
+	void wilson();
 };
 
 #endif

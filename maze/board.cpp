@@ -26,7 +26,6 @@ Board::Board() {
 		}
 	}
 
-	m_PathLength = 0;
 	m_CurPathIndex = 0;
 	m_PathCreated = false;
 }
@@ -70,19 +69,19 @@ void Board::update() {
 		m_PathCreated = true;
 	}
 	else {
-		if (m_PathLength > 0 && m_CurPathIndex < m_PathLength) {
-			delete m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->getCell();
-			m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->setCell(new EmptyPath());
-			m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->setUnit(new Creator());
+		if (m_PathRow.size() > 0 && m_CurPathIndex < m_PathRow.size()) {
+			delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
+			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new EmptyPath());
+			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(new Creator());
 
 			if (m_CurPathIndex > 0) {
-				delete m_Maze[m_PathRow[m_CurPathIndex - 1]][m_PathCol[m_CurPathIndex - 1]]->getUnit();
-				m_Maze[m_PathRow[m_CurPathIndex - 1]][m_PathCol[m_CurPathIndex - 1]]->setUnit(NULL);
+				delete m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->getUnit();
+				m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->setUnit(NULL);
 			}
 			
-			if (m_CurPathIndex + 1 == m_PathLength) {
-				delete m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->getUnit();
-				m_Maze[m_PathRow[m_CurPathIndex]][m_PathCol[m_CurPathIndex]]->setUnit(NULL);
+			if (m_CurPathIndex + 1 == m_PathRow.size()) {
+				delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getUnit();
+				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(NULL);
 			}
 
 			m_CurPathIndex++;
@@ -107,16 +106,23 @@ void Board::resetMaze() {
 			}
 		}
 	}
-
-	m_PathLength = 0;
+	m_PathRow.clear();
+	m_PathCol.clear();
 	m_CurPathIndex = 0;
 	m_PathCreated = false;
 }
 
 void Board::generateMaze() {
-	randomizedDFS();
+	//randomizedDFS();
 	//randomizedPrim();
+	wilson();
 }
+
+//=============================================================================
+//=============================================================================
+// Randomized DFS (Recursive Backtracker)
+//=============================================================================
+//=============================================================================
 
 // @see https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation
 void Board::randomizedDFS() {
@@ -133,9 +139,8 @@ void Board::randomizedDFS() {
 		Tile* curTile = visited.top();
 		visited.pop();
 
-		m_PathRow[m_PathLength] = curTile->getY();
-		m_PathCol[m_PathLength] = curTile->getX();
-		m_PathLength++;
+		m_PathRow.push_back(curTile->getY());
+		m_PathCol.push_back(curTile->getX());
 
 		// If the current cell has any neighbours which have not been visited
 		if (hasUnvisitedNeighbour(curTile)) {
@@ -147,17 +152,15 @@ void Board::randomizedDFS() {
 			Tile** unvisitedNeighbour = getUnvisitedNeighbour(curTile);
 
 			// Remove the wall between the current cell and the chosen cell
-			m_PathRow[m_PathLength] = unvisitedNeighbour[0]->getY();
-			m_PathCol[m_PathLength] = unvisitedNeighbour[0]->getX();
-			m_PathLength++;
+			m_PathRow.push_back(unvisitedNeighbour[0]->getY());
+			m_PathCol.push_back(unvisitedNeighbour[0]->getX());
 
 			// Mark the chosen cell as visited and push it to the stack
 			unvisitedNeighbour[1]->getCell()->setIsVisited(true);
 			visited.push(unvisitedNeighbour[1]);
 
-			m_PathRow[m_PathLength] = unvisitedNeighbour[1]->getY();
-			m_PathCol[m_PathLength] = unvisitedNeighbour[1]->getX();
-			m_PathLength++;
+			m_PathRow.push_back(unvisitedNeighbour[1]->getY());
+			m_PathCol.push_back(unvisitedNeighbour[1]->getX());
 
 			delete[] unvisitedNeighbour;
 			unvisitedNeighbour = NULL;
@@ -217,6 +220,12 @@ int Board::roundOffset(int offset) {
 	return 0;
 }
 
+//=============================================================================
+//=============================================================================
+// Prim's Algorithm
+//=============================================================================
+//=============================================================================
+
 // @see https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm
 void Board::randomizedPrim() {
 	// Start with a grid full of walls.
@@ -226,9 +235,8 @@ void Board::randomizedPrim() {
 	Tile* initialTile = m_Maze[m_RowSize / 2][m_ColSize / 2];
 	initialTile->getCell()->setIsVisited(true);
 	addWalls(initialTile, wallList);
-	m_PathRow[m_PathLength] = initialTile->getY();
-	m_PathCol[m_PathLength] = initialTile->getX();
-	m_PathLength++;
+	m_PathRow.push_back(initialTile->getY());
+	m_PathCol.push_back(initialTile->getX());
 	
 	// While there are walls in the list :
 	while (wallList.size() > 0) {
@@ -241,14 +249,12 @@ void Board::randomizedPrim() {
 
 			// Make the wall a passage and mark the unvisited cell as part of the maze.
 			randomWall->getCell()->setIsVisited(true);
-			m_PathRow[m_PathLength] = randomWall->getY();
-			m_PathCol[m_PathLength] = randomWall->getX();
-			m_PathLength++;
+			m_PathRow.push_back(randomWall->getY());
+			m_PathCol.push_back(randomWall->getX());
 
 			univisitedWall->getCell()->setIsVisited(true);
-			m_PathRow[m_PathLength] = univisitedWall->getY();
-			m_PathCol[m_PathLength] = univisitedWall->getX();
-			m_PathLength++;
+			m_PathRow.push_back(univisitedWall->getY());
+			m_PathCol.push_back(univisitedWall->getX());
 
 			// Add the neighboring walls of the cell to the wall list.
 			addWalls(univisitedWall, wallList);
@@ -301,4 +307,19 @@ Tile* Board::findUnvisitedWall(Tile* curTile) {
 	}
 
 	return NULL;
+}
+
+//=============================================================================
+//=============================================================================
+// Wilson's Algorithm
+//=============================================================================
+//=============================================================================
+
+void Board::wilson() {
+	// We begin the algorithm by initializing the maze with one cell chosen arbitrarily.
+	
+	// Then we start at a new cell chosen arbitrarily, and perform a random walk until we reach a cell already in the maze—however.
+	// if at any point the random walk reaches its own path, forming a loop, we erase the loop from the path before proceeding.
+	
+	// When the path reaches the maze, we add it to the maze.Then we perform another loop - erased random walk from another arbitrary starting cell, repeating until all cells have been filled.
 }
