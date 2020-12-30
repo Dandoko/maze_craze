@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stack>
+#include <map>
 
 #include "board.h"
 #include "tile.h"
@@ -315,11 +316,41 @@ Tile* Board::findUnvisitedWall(Tile* curTile) {
 //=============================================================================
 //=============================================================================
 
+// @see https://en.wikipedia.org/wiki/Maze_generation_algorithm#Wilson's_algorithm
 void Board::wilson() {
+	map<Tile*, bool> inMaze;
+	map<Tile*, bool> inCurWalk;
+	int count = 0;
+
 	// We begin the algorithm by initializing the maze with one cell chosen arbitrarily.
-	
-	// Then we start at a new cell chosen arbitrarily, and perform a random walk until we reach a cell already in the maze—however.
-	// if at any point the random walk reaches its own path, forming a loop, we erase the loop from the path before proceeding.
-	
-	// When the path reaches the maze, we add it to the maze.Then we perform another loop - erased random walk from another arbitrary starting cell, repeating until all cells have been filled.
+	Tile* initialTile = m_Maze[m_RowSize - 2][1];
+	initialTile->getCell()->setIsVisited(true);
+	inMaze[initialTile] = true;
+	count++;
+
+	while (count <= (BOARD_ROW_SIZE - 2) * (BOARD_COL_SIZE - 2)) {
+
+		// Then we start at a new cell chosen arbitrarily, and perform a random walk until we reach a cell already in the maze—however.
+		Tile* randTile = NULL;
+		while (!randTile) {
+			Tile* curTile = m_Maze[rand() % (BOARD_ROW_SIZE - 2) + 1][rand() % (BOARD_COL_SIZE - 2) + 1];
+			if (!curTile->getCell()->getIsVisited()) randTile = curTile;
+		}
+		inCurWalk[randTile] = true;
+
+		bool foundLoop = false, foundMaze = false;
+		while (!foundLoop && !foundMaze) {
+
+		}
+
+		// If at any point the random walk reaches its own path, forming a loop, we erase the loop from the path before proceeding.
+		if (foundLoop) {
+
+		}
+		// When the path reaches the maze, we add it to the maze.
+		else if (foundMaze) {
+			// Then we perform another loop - erased random walk from another arbitrary starting cell, repeating until all cells have been filled.
+			count++;
+		}
+	}
 }
