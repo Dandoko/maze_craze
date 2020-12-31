@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#define BOARD_ROW_SIZE 15
-#define BOARD_COL_SIZE 15
+#define BOARD_ROW_SIZE 15 // Must be odd
+#define BOARD_COL_SIZE 15 // Must be odd
 
 #define MAX_OFFSET 2
 #define MIN_OFFSET -2
@@ -32,6 +32,7 @@ public:
 	void update();
 	void resetMaze();
 	void generateMaze();
+	int roundOffset(int offset);
 
 	//=========================================================================
 	// Randomized DFS (Recursive Backtracker)
@@ -39,7 +40,6 @@ public:
 	void randomizedDFS();
 	bool hasUnvisitedNeighbour(Tile* curTile);
 	Tile** getUnvisitedNeighbour(Tile* curTile);
-	int roundOffset(int offset);
 
 	//=========================================================================
 	// Randomized Prim's Algorithm
@@ -52,6 +52,8 @@ public:
 	// Wilson's Algorithm
 	//=========================================================================
 	void wilson();
+	Tile** findRandomTile();
+	Tile** getNextRandomWalk(Tile* curTile);
 };
 
 #endif

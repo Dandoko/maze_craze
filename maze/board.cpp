@@ -88,7 +88,7 @@ void Board::update() {
 			m_CurPathIndex++;
 		}
 		else {
-			resetMaze();
+			//resetMaze();
 		}
 	}
 }
@@ -117,6 +117,12 @@ void Board::generateMaze() {
 	//randomizedDFS();
 	//randomizedPrim();
 	wilson();
+}
+
+int Board::roundOffset(int offset) {
+	if (offset > 1) return 2;
+	else if (offset < -1) return -2;
+	return 0;
 }
 
 //=============================================================================
@@ -213,12 +219,6 @@ Tile** Board::getUnvisitedNeighbour(Tile* curTile) {
 	neighbours[1] = unvisitedNeighbour;
 
 	return neighbours;
-}
-
-int Board::roundOffset(int offset) {
-	if (offset > 1) return 2;
-	else if (offset < -1) return -2;
-	return 0;
 }
 
 //=============================================================================
@@ -320,37 +320,131 @@ Tile* Board::findUnvisitedWall(Tile* curTile) {
 void Board::wilson() {
 	map<Tile*, bool> inMaze;
 	map<Tile*, bool> inCurWalk;
-	int count = 0;
+	vector<Tile*> inCurWalkOrder;
+	int mainTileCount = 0;
 
 	// We begin the algorithm by initializing the maze with one cell chosen arbitrarily.
-	Tile* initialTile = m_Maze[m_RowSize - 2][1];
-	initialTile->getCell()->setIsVisited(true);
-	inMaze[initialTile] = true;
-	count++;
+	Tile** initialTile = findRandomTile();
+	inMaze[initialTile[1]] = true;
+	mainTileCount++;
+	m_PathRow.push_back(initialTile[1]->getY());
+	m_PathCol.push_back(initialTile[1]->getX());
+	delete[] initialTile;
 
-	while (count <= (BOARD_ROW_SIZE - 2) * (BOARD_COL_SIZE - 2)) {
+	// Then we start at a new cell chosen arbitrarily, and perform a random walk until we reach a cell already in the maze.
+	Tile** curWalkTiles = new Tile * [2];
+	curWalkTiles[0] = NULL;
+	curWalkTiles[1] = NULL;
+	bool foundLoop = false;
+	
+	while (mainTileCount < ((BOARD_COL_SIZE - 2) / 2 + 1) * ((BOARD_COL_SIZE - 2) / 2 + 1)) {
+		if (!foundLoop) curWalkTiles = findRandomTile();
 
-		// Then we start at a new cell chosen arbitrarily, and perform a random walk until we reach a cell already in the maze—however.
-		Tile* randTile = NULL;
-		while (!randTile) {
-			Tile* curTile = m_Maze[rand() % (BOARD_ROW_SIZE - 2) + 1][rand() % (BOARD_COL_SIZE - 2) + 1];
-			if (!curTile->getCell()->getIsVisited()) randTile = curTile;
-		}
-		inCurWalk[randTile] = true;
+		while (inMaze.find(curWalkTiles[1]) == inMaze.end() && inCurWalk.find(curWalkTiles[1]) == inCurWalk.end()) {
+			inCurWalk[curWalkTiles[0]] = true;
+			inCurWalk[curWalkTiles[1]] = true;
 
-		bool foundLoop = false, foundMaze = false;
-		while (!foundLoop && !foundMaze) {
-
+			inCurWalkOrder.push_back(curWalkTiles[0]);
+			inCurWalkOrder.push_back(curWalkTiles[1]);
+			
+			Tile* tempWalkTile = curWalkTiles[1];
+			delete[] curWalkTiles;
+			curWalkTiles = getNextRandomWalk(tempWalkTile);
 		}
 
 		// If at any point the random walk reaches its own path, forming a loop, we erase the loop from the path before proceeding.
-		if (foundLoop) {
+		if (inCurWalk.find(curWalkTiles[1]) != inCurWalk.end()) {
+			
+			// Finding all of tiles that are a part of the loop
+			int loopIndex = -1;
 
+			for (int i = 0; i < inCurWalkOrder.size() && loopIndex != -1; i++) {
+				if (inCurWalkOrder.at(i) == curWalkTiles[1]) {
+					loopIndex = i;
+				}
+			}
+
+			// Removing all the tiles in the loop starting from the tile after the loop point
+			for (int i = inCurWalkOrder.size() - 1; i > loopIndex; i--) {
+				inCurWalk.erase(inCurWalkOrder.at(i));
+				inCurWalkOrder.erase(inCurWalkOrder.begin() + i);
+			}
+
+			foundLoop = true;
 		}
 		// When the path reaches the maze, we add it to the maze.
-		else if (foundMaze) {
-			// Then we perform another loop - erased random walk from another arbitrary starting cell, repeating until all cells have been filled.
-			count++;
+		else if (inMaze.find(curWalkTiles[1]) != inMaze.end()) {
+
+			for (auto const& tile : inCurWalk) {
+				inMaze[tile.first] = true;
+				m_PathRow.push_back(tile.first->getY());
+				m_PathCol.push_back(tile.first->getX());
+				if (tile.first->getX() % 2 != 0 && tile.first->getY() % 2 != 0) mainTileCount++;
+			}
+			inCurWalk.clear();
+			inCurWalkOrder.clear();
+			foundLoop = false;
+		}
+
+		// Then we perform another loop - erased random walk from another arbitrary starting cell, repeating until all cells have been filled.
+	}
+
+	cout << "END" << endl;
+	delete[] curWalkTiles;
+}
+
+// Pre: There must be at least 1 valid tile to find
+// Post: Only odd indices will be found
+Tile** Board::findRandomTile() {
+	Tile** randTiles = new Tile * [2];
+	randTiles[0] = NULL;
+	randTiles[1] = NULL;
+
+	while (!randTiles[1]) {
+		int randomX = rand() % (BOARD_ROW_SIZE - 2) + 1;
+		int randomY = rand() % (BOARD_COL_SIZE - 2) + 1;
+		
+		if (randomX % 2 != 0 && randomY % 2 != 0) {
+			randTiles[1] = m_Maze[randomY][randomX];
+
+			while (!randTiles[0]) {
+				int xOffset = roundOffset(rand() % (MAX_OFFSET - MIN_OFFSET + 1) + MIN_OFFSET);
+				int yOffset = roundOffset(rand() % (MAX_OFFSET - MIN_OFFSET + 1) + MIN_OFFSET);
+
+				if (yOffset != 0 || xOffset != 0) {
+					if (!(yOffset / 2 && xOffset / 2)) {
+						if (randTiles[1]->getX() + xOffset >= 1 && randTiles[1]->getY() + yOffset >= 1 &&
+							randTiles[1]->getX() + xOffset < m_ColSize - 1 && randTiles[1]->getY() + yOffset < m_RowSize - 1) {
+							randTiles[0] = m_Maze[randTiles[1]->getY() + yOffset / 2][randTiles[1]->getX() + xOffset / 2];
+						}
+					}
+				}
+			}
 		}
 	}
+
+	return randTiles;
+}
+
+Tile** Board::getNextRandomWalk(Tile* curTile) {
+	Tile** nextWalkTiles = new Tile * [2];
+	nextWalkTiles[0] = NULL;
+	nextWalkTiles[1] = NULL;
+
+	while (!nextWalkTiles[1]) {
+		int xOffset = roundOffset(rand() % (MAX_OFFSET - MIN_OFFSET + 1) + MIN_OFFSET);
+		int yOffset = roundOffset(rand() % (MAX_OFFSET - MIN_OFFSET + 1) + MIN_OFFSET);
+
+		if (yOffset != 0 || xOffset != 0) {
+			if (!(yOffset / 2 && xOffset / 2)) {
+				if (curTile->getX() + xOffset >= 1 && curTile->getY() + yOffset >= 1 &&
+					curTile->getX() + xOffset < m_ColSize - 1 && curTile->getY() + yOffset < m_RowSize - 1) {
+					nextWalkTiles[0] = m_Maze[curTile->getY() + yOffset / 2][curTile->getX() + xOffset / 2];
+					nextWalkTiles[1] = m_Maze[curTile->getY() + yOffset][curTile->getX() + xOffset];
+				}
+			}
+		}
+	}
+
+	return nextWalkTiles;
 }
