@@ -76,7 +76,7 @@ void Board::update() {
 					delete m_Maze[m_PathRow.at(i)][m_PathCol.at(i)]->getCell();
 					m_Maze[m_PathRow.at(i)][m_PathCol.at(i)]->setCell(new Wall(false));
 
-					if (m_ToDelete.at(i) && !m_ToDelete.at(i - 1))
+					if (i <= 1 || m_ToDelete.at(i) && !m_ToDelete.at(i - 1))
 						break;
 				}
 			}
@@ -351,7 +351,14 @@ void Board::wilson() {
 	
 	while (mainTileCount < ((BOARD_COL_SIZE - 2) / 2 + 1) * ((BOARD_COL_SIZE - 2) / 2 + 1)) {
 		if (!foundLoop) curWalkTiles = findRandomTile();
+
+		bool flag = false;
 		while (inMaze.find(curWalkTiles[1]) == inMaze.end() && inCurWalk.find(curWalkTiles[1]) == inCurWalk.end()) {
+			if (foundLoop && !flag) {
+				flag = true;
+				cout << "WASD" << endl;
+			}
+
 			inCurWalk[curWalkTiles[0]] = true;
 			inCurWalk[curWalkTiles[1]] = true;
 
@@ -373,21 +380,19 @@ void Board::wilson() {
 
 		// If at any point the random walk reaches its own path, forming a loop, we erase the loop from the path before proceeding.
 		if (inCurWalk.find(curWalkTiles[1]) != inCurWalk.end()) {
+			
 			inCurWalk[curWalkTiles[0]] = true;
 			inCurWalkOrder.push_back(curWalkTiles[0]);
 
 			m_PathRow.push_back(curWalkTiles[0]->getY());
 			m_PathCol.push_back(curWalkTiles[0]->getX());
-
 			m_ToDelete.push_back(false);
 
 			for (int i = m_ToDelete.size() - 1; i >= 0; i--) {
-				m_ToDelete.at(i) = true;
-				
-
-				if (m_PathRow.at(i) == curWalkTiles[1]->getY() && m_PathCol.at(i) == curWalkTiles[1]->getX()) {
+				if (m_PathRow.at(i) == curWalkTiles[1]->getY() && m_PathCol.at(i) == curWalkTiles[1]->getX())
 					break;
-				}
+				
+				m_ToDelete.at(i) = true;
 			}
 
 			// Finding all of tiles that are a part of the loop
@@ -399,11 +404,27 @@ void Board::wilson() {
 				}
 			}
 
+			cout << curWalkTiles[1]->getX() << ", " << curWalkTiles[1]->getY() << endl;
+
 			// Removing all the tiles in the loop starting from the tile after the loop point
-			for (int i = inCurWalkOrder.size() - 1; i >= loopIndex; i--) {
+			for (int i = inCurWalkOrder.size() - 1; i > loopIndex; i--) {
+				inCurWalkOrder.at(i)->getCell()->setIsVisited(false);
 				inCurWalk.erase(inCurWalkOrder.at(i));
 				inCurWalkOrder.erase(inCurWalkOrder.begin() + i);
 			}
+
+			//cout << loopIndex << " | " << inCurWalkOrder.size() << endl;
+
+			Tile* lastTileOnLoop = inCurWalkOrder.at(loopIndex);
+			cout << lastTileOnLoop->getX() << ", " << lastTileOnLoop->getY() << endl;
+			m_PathRow.push_back(lastTileOnLoop->getY());
+			m_PathCol.push_back(lastTileOnLoop->getX());
+			m_ToDelete.push_back(false);
+			delete[] curWalkTiles;
+			curWalkTiles = getNextRandomWalk(lastTileOnLoop);
+
+			cout << curWalkTiles[1]->getX() << ", " << curWalkTiles[1]->getY() << endl;
+			
 
 			foundLoop = true;
 		}
@@ -415,22 +436,20 @@ void Board::wilson() {
 
 			m_PathRow.push_back(curWalkTiles[0]->getY());
 			m_PathCol.push_back(curWalkTiles[0]->getX());
-
 			m_ToDelete.push_back(false);
 
 			for (int i = 0; i < inCurWalkOrder.size(); i++) {
 				inCurWalkOrder.at(i)->getCell()->setIsVisited(true);
 				inMaze[inCurWalkOrder.at(i)] = true;
 
-				//m_PathRow.push_back(inCurWalkOrder.at(i)->getY());
-				//m_PathCol.push_back(inCurWalkOrder.at(i)->getX());
-
-				if (inCurWalkOrder.at(i)->getX() % 2 != 0 && inCurWalkOrder.at(i)->getY() % 2 != 0) mainTileCount++;
+				if (inCurWalkOrder.at(i)->getX() % 2 != 0 && inCurWalkOrder.at(i)->getY() % 2 != 0)
+					mainTileCount++;
 			}
 			inCurWalk.clear();
 			inCurWalkOrder.clear();
 			foundLoop = false;
 		}
+		cout << "===================" << endl;
 
 		// Then we perform another loop - erased random walk from another arbitrary starting cell, repeating until all cells have been filled.
 	}

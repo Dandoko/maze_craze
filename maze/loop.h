@@ -4,7 +4,7 @@
 class Timer;
 class Manager;
 
-#define MAX_FRAME_RATE 1.0f/15.0f
+#define MAX_FRAME_RATE 1.0f/2.0f
 
 class Loop {
 private:
