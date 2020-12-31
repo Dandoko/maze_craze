@@ -23,6 +23,8 @@ private:
 	int m_CurPathIndex;
 	bool m_PathCreated;
 
+	std::vector<bool> m_ToDelete;
+
 public:
 	Board();
 	Board(const Board&) = delete;
