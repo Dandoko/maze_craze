@@ -70,7 +70,21 @@ void Board::update() {
 		m_PathCreated = true;
 	}
 	else {
-		if (m_PathRow.size() > 0 && m_CurPathIndex < m_PathRow.size()) {
+		if (false) {
+			cout << "========================" << endl;
+			for (int i = 0; i < m_ToDelete.size(); i++) {
+				cout << i << ": " << m_ToDelete.at(i) << endl;
+			}
+			exit(0);
+		}
+		else if (m_PathRow.size() > 0 && m_CurPathIndex < m_PathRow.size()) {
+			/*if (m_PathRow.at(m_CurPathIndex) == 7 && m_PathCol.at(m_CurPathIndex) == 7) {
+				cout << m_CurPathIndex << ": " << m_ToDelete.at(m_CurPathIndex) << endl;
+			}
+			else {
+				cout << m_CurPathIndex << ": " << 0 << endl;
+			}*/
+
 			if (m_CurPathIndex > 0 && m_ToDelete.size() > 0 && !m_ToDelete.at(m_CurPathIndex) && m_ToDelete.at(m_CurPathIndex - 1)) {
 				for (int i = m_CurPathIndex - 1; i >= 0; i--) {
 					delete m_Maze[m_PathRow.at(i)][m_PathCol.at(i)]->getCell();
@@ -79,6 +93,24 @@ void Board::update() {
 					if (i <= 1 || m_ToDelete.at(i) && !m_ToDelete.at(i - 1))
 						break;
 				}
+			}
+
+			/*if (m_CurPathIndex > 0 && deleteTest.size() > 0 && !deleteTest.at(m_CurPathIndex).front() && deleteTest.at(m_CurPathIndex - 1).front()) {
+				for (int i = m_CurPathIndex - 1; i >= 0; i--) {
+					delete m_Maze[m_PathRow.at(i)][m_PathCol.at(i)]->getCell();
+					m_Maze[m_PathRow.at(i)][m_PathCol.at(i)]->setCell(new Wall(false));
+
+					if (deleteTest.at(i).size() > 2) {
+						deleteTest.at(i).pop();
+					}
+
+					if (i <= 1 || deleteTest.at(i).front() && !deleteTest.at(i - 1).front())
+						break;
+				}
+			}*/
+
+			if (deleteTest.at(m_CurPathIndex).size() > 2 && !deleteTest.at(m_CurPathIndex).front()) {
+				deleteTest.at(m_CurPathIndex).pop();
 			}
 
 			delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
@@ -340,7 +372,13 @@ void Board::wilson() {
 	mainTileCount++;
 	m_PathRow.push_back(initialTile[1]->getY());
 	m_PathCol.push_back(initialTile[1]->getX());
+
 	m_ToDelete.push_back(false);
+
+	queue<bool> test;
+	test.push(false);
+	deleteTest.push_back(test);
+
 	delete[] initialTile;
 
 	// Then we start at a new cell chosen arbitrarily, and perform a random walk until we reach a cell already in the maze.
@@ -352,12 +390,7 @@ void Board::wilson() {
 	while (mainTileCount < ((BOARD_COL_SIZE - 2) / 2 + 1) * ((BOARD_COL_SIZE - 2) / 2 + 1)) {
 		if (!foundLoop) curWalkTiles = findRandomTile();
 
-		bool flag = false;
 		while (inMaze.find(curWalkTiles[1]) == inMaze.end() && inCurWalk.find(curWalkTiles[1]) == inCurWalk.end()) {
-			if (foundLoop && !flag) {
-				flag = true;
-				cout << "WASD" << endl;
-			}
 
 			inCurWalk[curWalkTiles[0]] = true;
 			inCurWalk[curWalkTiles[1]] = true;
@@ -369,9 +402,17 @@ void Board::wilson() {
 			m_PathCol.push_back(curWalkTiles[0]->getX());
 			m_ToDelete.push_back(false);
 
+			queue<bool> test2;
+			test2.push(false);
+			deleteTest.push_back(test2);
+
 			m_PathRow.push_back(curWalkTiles[1]->getY());
 			m_PathCol.push_back(curWalkTiles[1]->getX());
 			m_ToDelete.push_back(false);
+
+			queue<bool> test3;
+			test3.push(false);
+			deleteTest.push_back(test3);
 			
 			Tile* tempWalkTile = curWalkTiles[1];
 			delete[] curWalkTiles;
@@ -388,12 +429,24 @@ void Board::wilson() {
 			m_PathCol.push_back(curWalkTiles[0]->getX());
 			m_ToDelete.push_back(false);
 
+			queue<bool> test;
+			test.push(false);
+			deleteTest.push_back(test);
+
+			cout << "Loop At " << curWalkTiles[1]->getY() << " | " << curWalkTiles[1]->getX() << endl;
+			//cout << m_ToDelete.size() << endl;
 			for (int i = m_ToDelete.size() - 1; i >= 0; i--) {
-				if (m_PathRow.at(i) == curWalkTiles[1]->getY() && m_PathCol.at(i) == curWalkTiles[1]->getX())
+				if (m_PathRow.at(i) == curWalkTiles[1]->getY() && m_PathCol.at(i) == curWalkTiles[1]->getX()) {
 					break;
+				}
 				
+				cout << "i: " << i << " = " << m_PathRow.at(i) << " | " << m_PathCol.at(i) << endl;
 				m_ToDelete.at(i) = true;
+
+				deleteTest.at(i).push(true);
+				deleteTest.at(i).push(false);
 			}
+
 
 			// Finding all of tiles that are a part of the loop
 			int loopIndex = -1;
@@ -404,8 +457,10 @@ void Board::wilson() {
 				}
 			}
 
-			cout << curWalkTiles[1]->getX() << ", " << curWalkTiles[1]->getY() << endl;
+			//cout << m_ToDelete.at(12) << endl;
+			//cout << curWalkTiles[1]->getX() << ", " << curWalkTiles[1]->getY() << endl;
 
+			//exit(0);
 			// Removing all the tiles in the loop starting from the tile after the loop point
 			for (int i = inCurWalkOrder.size() - 1; i > loopIndex; i--) {
 				inCurWalkOrder.at(i)->getCell()->setIsVisited(false);
@@ -416,14 +471,18 @@ void Board::wilson() {
 			//cout << loopIndex << " | " << inCurWalkOrder.size() << endl;
 
 			Tile* lastTileOnLoop = inCurWalkOrder.at(loopIndex);
-			cout << lastTileOnLoop->getX() << ", " << lastTileOnLoop->getY() << endl;
 			m_PathRow.push_back(lastTileOnLoop->getY());
 			m_PathCol.push_back(lastTileOnLoop->getX());
 			m_ToDelete.push_back(false);
+
+			queue<bool> test2;
+			test2.push(false);
+			deleteTest.push_back(test2);
+
 			delete[] curWalkTiles;
 			curWalkTiles = getNextRandomWalk(lastTileOnLoop);
 
-			cout << curWalkTiles[1]->getX() << ", " << curWalkTiles[1]->getY() << endl;
+			//cout << curWalkTiles[1]->getX() << ", " << curWalkTiles[1]->getY() << endl;
 			
 
 			foundLoop = true;
@@ -438,6 +497,18 @@ void Board::wilson() {
 			m_PathCol.push_back(curWalkTiles[0]->getX());
 			m_ToDelete.push_back(false);
 
+			queue<bool> test;
+			test.push(false);
+			deleteTest.push_back(test);
+
+			m_PathRow.push_back(curWalkTiles[1]->getY());
+			m_PathCol.push_back(curWalkTiles[1]->getX());
+			m_ToDelete.push_back(false);
+
+			queue<bool> test2;
+			test2.push(false);
+			deleteTest.push_back(test2);
+
 			for (int i = 0; i < inCurWalkOrder.size(); i++) {
 				inCurWalkOrder.at(i)->getCell()->setIsVisited(true);
 				inMaze[inCurWalkOrder.at(i)] = true;
@@ -449,11 +520,11 @@ void Board::wilson() {
 			inCurWalkOrder.clear();
 			foundLoop = false;
 		}
-		cout << "===================" << endl;
 
 		// Then we perform another loop - erased random walk from another arbitrary starting cell, repeating until all cells have been filled.
 	}
 
+	//exit(0);
 	delete[] curWalkTiles;
 }
 

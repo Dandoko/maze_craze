@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <vector>
+#include <queue>
 
 #define BOARD_ROW_SIZE 15 // Must be odd
 #define BOARD_COL_SIZE 15 // Must be odd
@@ -24,6 +25,7 @@ private:
 	bool m_PathCreated;
 
 	std::vector<bool> m_ToDelete;
+	std::vector<std::queue<bool>> deleteTest;
 
 public:
 	Board();
