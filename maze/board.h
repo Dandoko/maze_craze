@@ -2,7 +2,7 @@
 #define BOARD_H
 
 #include <vector>
-#include <queue>
+#include <map>
 
 #define BOARD_ROW_SIZE 15 // Must be odd
 #define BOARD_COL_SIZE 15 // Must be odd
@@ -24,8 +24,10 @@ private:
 	int m_CurPathIndex;
 	bool m_PathCreated;
 
-	std::vector<bool> m_ToDelete;
-	std::vector<std::queue<bool>> deleteTest;
+	//=========================================================================
+	// Wilson's Algorithm
+	//=========================================================================
+	std::map<int, std::vector<Tile*>> m_DeleteWilsonLoop;
 
 public:
 	Board();
