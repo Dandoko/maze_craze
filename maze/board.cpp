@@ -508,14 +508,14 @@ Tile** Board::getNextRandomWalk(Tile* curTile) {
 void Board::recursiveDivision() {
 	// Begin with the maze's space with no walls. Call this a chamber.
 	
-	divide(1, BOARD_COL_SIZE - 2, 1, BOARD_ROW_SIZE);
+	divide(1, BOARD_COL_SIZE - 2, 1, BOARD_ROW_SIZE - 2);
 
 	//cout << "END" << endl;
 	//exit(0);
 }
 
 void Board::divide(int minX, int maxX, int minY, int maxY) {
-	if (maxX - minX <= 2 || maxY - minY <= 2) {
+	if (maxX - minX < 4 || maxY - minY < 4) {
 		return;
 	}
 
@@ -540,11 +540,12 @@ void Board::divide(int minX, int maxX, int minY, int maxY) {
 int* Board::createChamber(int minX, int maxX, int minY, int maxY) {
 	int randDir = rand() % 4;
 
-	int randPosX = rand() % (maxX - minX) + minX;
-	int randPosY = rand() % (maxY - minY) + minY;
-	while (randPosX % 2 != 1 && randPosY % 2 != 1) {
-		randPosX = rand() % (maxX - minX) + minX;
-		randPosY = rand() % (maxY - minY) + minY;
+	int randPosX = rand() % ((maxX - 2) - (minX + 2) + 1) + (minX + 2);
+	int randPosY = rand() % ((maxY - 2) - (minY + 2) + 1) + (minY + 2);
+	// While either is not odd
+	while (randPosX % 2 != 1 || randPosY % 2 != 1) {
+		randPosX = rand() % ((maxX - 2) - (minX + 2) + 1) + (minX + 2);
+		randPosY = rand() % ((maxY - 2) - (minY + 2) + 1) + (minY + 2);
 	}
 
 	int randPos = -1;
