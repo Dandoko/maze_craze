@@ -10,6 +10,11 @@
 #define MAX_OFFSET 2
 #define MIN_OFFSET -2
 
+#define DIR_N 0
+#define DIR_E 1
+#define DIR_S 2
+#define DIR_W 3
+
 class Tile;
 
 class Board {
@@ -60,6 +65,13 @@ public:
 	void wilson();
 	Tile** findRandomTile();
 	Tile** getNextRandomWalk(Tile* curTile);
+
+	//=========================================================================
+	// Recursive Division
+	//=========================================================================
+	void recursiveDivision();
+	void divide(int minX, int maxX, int minY, int maxY);
+	int* createChamber(int minX, int maxX, int minY, int maxY);
 };
 
 #endif

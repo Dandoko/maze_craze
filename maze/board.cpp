@@ -94,7 +94,7 @@ void Board::update() {
 			m_CurPathIndex++;
 		}
 		else {
-			resetMaze();
+			//resetMaze();
 		}
 	}
 }
@@ -123,7 +123,8 @@ void Board::resetMaze() {
 void Board::generateMaze() {
 	//randomizedDFS();
 	//randomizedPrim();
-	wilson();
+	//wilson();
+	recursiveDivision();
 }
 
 int Board::roundOffset(int offset) {
@@ -495,4 +496,79 @@ Tile** Board::getNextRandomWalk(Tile* curTile) {
 	}
 
 	return nextWalkTiles;
+}
+
+//=============================================================================
+//=============================================================================
+// Recursive Division
+//=============================================================================
+//=============================================================================
+
+// @see https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_division_method
+void Board::recursiveDivision() {
+	// Begin with the maze's space with no walls. Call this a chamber.
+	
+	divide(1, BOARD_COL_SIZE - 2, 1, BOARD_ROW_SIZE);
+
+	//cout << "END" << endl;
+	//exit(0);
+}
+
+void Board::divide(int minX, int maxX, int minY, int maxY) {
+	if (maxX - minX <= 2 || maxY - minY <= 2) {
+		return;
+	}
+
+	// Divide the chamber with a randomly positioned wall (or multiple walls) where
+	// each wall contains a randomly positioned passage opening within it.
+	int* chamber = createChamber(minX, maxX, minY, maxY);
+
+	// Then recursively repeat the process on the subchambers until all chambers are minimum sized.
+	if (chamber[0] == DIR_N || chamber[0] == DIR_S) {
+		divide(minX, chamber[1], minY, maxY);
+		divide(chamber[1], maxX, minY, maxY);
+	}
+	else {
+		divide(minX, maxX, minY, chamber[1]);
+		divide(minX, maxX, chamber[1], maxY);
+	}
+
+	delete[] chamber;
+}
+
+// Post: Returns dir, randPos depending on direction
+int* Board::createChamber(int minX, int maxX, int minY, int maxY) {
+	int randDir = rand() % 4;
+
+	int randPosX = rand() % (maxX - minX) + minX;
+	int randPosY = rand() % (maxY - minY) + minY;
+	while (randPosX % 2 != 1 && randPosY % 2 != 1) {
+		randPosX = rand() % (maxX - minX) + minX;
+		randPosY = rand() % (maxY - minY) + minY;
+	}
+
+	int randPos = -1;
+	if (randDir == DIR_N || randDir == DIR_S) {
+		for (int i = minY; i <= maxY; i++) {
+			if (i != randPosY) {
+				m_PathRow.push_back(randPosX);
+				m_PathCol.push_back(i);
+			}
+		}
+		randPos = randPosX;
+	}
+	else if (randDir == DIR_E || randDir == DIR_W) {
+		for (int j = minX; j <= maxX; j++) {
+			if (j != randPosX) {
+				m_PathRow.push_back(j);
+				m_PathCol.push_back(randPosY);
+			}
+		}
+		randPos = randPosY;
+	}
+
+	int* chamber = new int [2];
+	chamber[0] = randDir;
+	chamber[1] = randPos;
+	return chamber;
 }
