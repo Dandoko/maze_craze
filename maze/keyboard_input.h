@@ -9,9 +9,9 @@ public:
 	KeyboardInput(const KeyboardInput&) = delete;
 	virtual ~KeyboardInput();
 
-	void update();
-
 	bool getSpacebarClicked();
+
+	void update();
 };
 
 #endif

@@ -11,16 +11,16 @@ Cell::Cell(char shape) {
 
 Cell::~Cell() { }
 
-void Cell::printCell() {
-	cout << m_Shape << " ";
-}
-
 bool Cell::getIsVisited() {
 	return m_IsVisited;
 }
 
 void Cell::setIsVisited(bool isVisited) {
 	m_IsVisited = isVisited;
+}
+
+void Cell::printCell() {
+	cout << m_Shape << " ";
 }
 
 bool Cell::isWall() {

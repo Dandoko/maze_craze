@@ -5,7 +5,6 @@
 
 class NonEmptyPath : public Path {
 private:
-	int m_Color;
 public:
 	NonEmptyPath(char shape, int color);
 	NonEmptyPath(const NonEmptyPath&) = delete;

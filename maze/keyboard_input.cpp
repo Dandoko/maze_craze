@@ -11,12 +11,12 @@ KeyboardInput::KeyboardInput() {
 
 KeyboardInput::~KeyboardInput() {}
 
+bool KeyboardInput::getSpacebarClicked() {
+	return m_SpacebarClicked;
+}
+
 void KeyboardInput::update() {
 	if (GetAsyncKeyState(VK_SPACE)) {
 		m_SpacebarClicked = true;
 	}
-}
-
-bool KeyboardInput::getSpacebarClicked() {
-	return m_SpacebarClicked;
 }

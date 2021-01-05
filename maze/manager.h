@@ -21,7 +21,6 @@ public:
 	static void destoryManagerInstance();
 
 	void start();
-
 	void update();
 	void render();
 };

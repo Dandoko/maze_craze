@@ -11,12 +11,12 @@ Timer::Timer() {
 
 Timer::~Timer() {}
 
-void Timer::resetStartTime() {
-	m_StartTime = chrono::system_clock::now();
-}
-
 float Timer::getDeltaTime() {
 	return m_DeltaTime.count();
+}
+
+void Timer::resetStartTime() {
+	m_StartTime = chrono::system_clock::now();
 }
 
 void Timer::updateDeltaTime() {

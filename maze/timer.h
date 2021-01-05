@@ -13,9 +13,9 @@ public:
 	Timer(const Timer&) = delete;
 	virtual ~Timer();
 
-	void resetStartTime();
-
 	float getDeltaTime();
+
+	void resetStartTime();
 	void updateDeltaTime();
 };
 

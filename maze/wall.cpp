@@ -10,10 +10,10 @@ Wall::Wall(bool isBorder) : Cell('X') {
 
 Wall::~Wall() {}
 
-bool Wall::isWall() {
-	return true;
-}
-
 bool Wall::getIsBorder() {
 	return m_IsBorder;
+}
+
+bool Wall::isWall() {
+	return true;
 }

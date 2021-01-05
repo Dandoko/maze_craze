@@ -11,8 +11,9 @@ public:
 	Wall(const Wall&) = delete;
 	virtual ~Wall();
 
-	bool isWall();
 	bool getIsBorder();
+
+	bool isWall();
 };
 
 #endif

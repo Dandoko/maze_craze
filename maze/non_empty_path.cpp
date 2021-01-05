@@ -5,7 +5,6 @@
 using namespace std;
 
 NonEmptyPath::NonEmptyPath(char shape, int color) : Path(shape) {
-	m_Color = color;
 }
 
 NonEmptyPath::~NonEmptyPath() {}
