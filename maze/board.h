@@ -36,6 +36,12 @@ private:
 	//=========================================================================
 	std::map<int, std::vector<Tile*>> m_DeleteWilsonLoop;
 
+	//=========================================================================
+	// Recursive Division Algorithm
+	//=========================================================================
+	std::vector<int> m_WallIndices;
+	int m_WallIndex;
+
 public:
 	Board();
 	Board(const Board&) = delete;

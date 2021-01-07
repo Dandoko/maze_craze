@@ -10,7 +10,7 @@ project.
 
 **This project is a work in progress.**
 
-**Class Diagram:** [Click Here](https://github.com/Dandoko/maze/blob/master/assets/class_diagram.png)
+**Class Diagram:** [Click Here](https://github.com/Dandoko/maze/blob/master/assets/maze_class_diagram.png)
 
 ## Implemented Algorithms
 
@@ -22,7 +22,7 @@ project.
 	- https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm
 - Wilson's Algorithm
 	- https://en.wikipedia.org/wiki/Maze_generation_algorithm#Wilson's_algorithm
-- Recursive Division - **Work in Progress**
+- Recursive Division
 	- http://weblog.jamisbuck.org/2011/1/12/maze-generation-recursive-division-algorithm
 
 ### Pathfinding

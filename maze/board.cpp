@@ -28,6 +28,7 @@ Board::Board() {
 
 	m_CurPathIndex = 0;
 	m_PathCreated = false;
+	m_WallIndex = 0;
 }
 
 Board::~Board() {
@@ -71,21 +72,12 @@ void Board::update() {
 	else {
 		if (m_PathRow.size() > 0 && m_CurPathIndex < m_PathRow.size()) {
 #ifdef RECURSIVE_DIVISION_ON
-			delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
-			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new Wall(false));
-			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(new Creator());
-
-			if (m_CurPathIndex > 0) {
-				delete m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->getUnit();
-				m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->setUnit(NULL);
+			for (int i = 0; i < m_WallIndices.at(m_WallIndex); i++) {
+				delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
+				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new Wall(false));
+				m_CurPathIndex++;
 			}
-
-			if (m_CurPathIndex + 1 == m_PathRow.size()) {
-				delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getUnit();
-				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(NULL);
-			}
-
-			m_CurPathIndex++;
+			m_WallIndex++;
 #else
 			if (m_CurPathIndex > 0 && m_DeleteWilsonLoop.size() > 0 && m_DeleteWilsonLoop.find(m_CurPathIndex) != m_DeleteWilsonLoop.end()) {
 				for (int i = 0; i < m_DeleteWilsonLoop[m_CurPathIndex].size(); i++) {
@@ -137,6 +129,8 @@ void Board::resetMaze() {
 	m_CurPathIndex = 0;
 	m_PathCreated = false;
 	m_DeleteWilsonLoop.clear();
+	m_WallIndices.clear();
+	m_WallIndex = 0;
 }
 
 void Board::emptyMaze() {
@@ -589,10 +583,12 @@ int* Board::createChamber(int minX, int maxX, int minY, int maxY) {
 		}
 
 		// Creating the wall
+		m_WallIndices.push_back(0);
 		for (int i = minY; i <= maxY; i++) {
 			if (i != randPosY) {
 				m_PathRow.push_back(i);
 				m_PathCol.push_back(randPosX);
+				m_WallIndices.back()++;
 			}
 			else {
 				m_Maze[i][randPosX]->getCell()->setIsVisited(true);
@@ -616,10 +612,12 @@ int* Board::createChamber(int minX, int maxX, int minY, int maxY) {
 		}
 
 		// Creating the wall
+		m_WallIndices.push_back(0);
 		for (int j = minX; j <= maxX; j++) {
 			if (j != randPosX) {
 				m_PathRow.push_back(randPosY);
 				m_PathCol.push_back(j);
+				m_WallIndices.back()++;
 			}
 			else {
 				m_Maze[randPosY][j]->getCell()->setIsVisited(true);
