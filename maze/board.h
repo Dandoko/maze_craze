@@ -15,6 +15,8 @@
 #define DIR_S 2
 #define DIR_W 3
 
+#define RECURSIVE_DIVISION_ON
+
 class Tile;
 
 class Board {
@@ -42,6 +44,7 @@ public:
 	void printMaze();
 	void update();
 	void resetMaze();
+	void emptyMaze();
 	void generateMaze();
 	int roundOffset(int offset);
 

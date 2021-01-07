@@ -17,9 +17,13 @@ project.
 ### Procedural Generation
 
 - Randomized DFS (Recursive Backtracker)
+	- https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation
 - Randomized Prim's Algorithm
+	- https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm
 - Wilson's Algorithm
+	- https://en.wikipedia.org/wiki/Maze_generation_algorithm#Wilson's_algorithm
 - Recursive Division - **Work in Progress**
+	- http://weblog.jamisbuck.org/2011/1/12/maze-generation-recursive-division-algorithm
 
 ### Pathfinding
 

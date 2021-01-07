@@ -70,6 +70,9 @@ void Board::update() {
 	}
 	else {
 		if (m_PathRow.size() > 0 && m_CurPathIndex < m_PathRow.size()) {
+#ifdef RECURSIVE_DIVISION_ON
+
+#else
 			if (m_CurPathIndex > 0 && m_DeleteWilsonLoop.size() > 0 && m_DeleteWilsonLoop.find(m_CurPathIndex) != m_DeleteWilsonLoop.end()) {
 				for (int i = 0; i < m_DeleteWilsonLoop[m_CurPathIndex].size(); i++) {
 					delete m_DeleteWilsonLoop[m_CurPathIndex].at(i)->getCell();
@@ -92,6 +95,8 @@ void Board::update() {
 			}
 
 			m_CurPathIndex++;
+
+#endif
 		}
 		else {
 			//resetMaze();
@@ -118,6 +123,17 @@ void Board::resetMaze() {
 	m_CurPathIndex = 0;
 	m_PathCreated = false;
 	m_DeleteWilsonLoop.clear();
+}
+
+void Board::emptyMaze() {
+	for (int i = 0; i < m_RowSize; i++) {
+		for (int j = 0; j < m_ColSize; j++) {
+			if (!(i == 0 || i == m_RowSize - 1 || j == 0 || j == m_ColSize - 1)) {
+				delete m_Maze[i][j]->getCell();
+				m_Maze[i][j]->setCell(new EmptyPath());
+			}
+		}
+	}
 }
 
 void Board::generateMaze() {
@@ -504,14 +520,13 @@ Tile** Board::getNextRandomWalk(Tile* curTile) {
 //=============================================================================
 //=============================================================================
 
-// @see https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_division_method
+// @see http://weblog.jamisbuck.org/2011/1/12/maze-generation-recursive-division-algorithm
 void Board::recursiveDivision() {
-	// Begin with the maze's space with no walls. Call this a chamber.
+	// Begin with an empty field.
+	emptyMaze();
 	
 	divide(1, BOARD_COL_SIZE - 2, 1, BOARD_ROW_SIZE - 2);
 
-	//cout << "END" << endl;
-	//exit(0);
 }
 
 void Board::divide(int minX, int maxX, int minY, int maxY) {
@@ -519,11 +534,10 @@ void Board::divide(int minX, int maxX, int minY, int maxY) {
 		return;
 	}
 
-	// Divide the chamber with a randomly positioned wall (or multiple walls) where
-	// each wall contains a randomly positioned passage opening within it.
 	int* chamber = createChamber(minX, maxX, minY, maxY);
 
-	// Then recursively repeat the process on the subchambers until all chambers are minimum sized.
+	// Repeat [the previous step] with the areas on either side of the wall.
+	// Continue, recursively, until the maze reaches the desired resolution.
 	if (chamber[0] == DIR_N || chamber[0] == DIR_S) {
 		divide(minX, chamber[1], minY, maxY);
 		divide(chamber[1], maxX, minY, maxY);
@@ -538,6 +552,7 @@ void Board::divide(int minX, int maxX, int minY, int maxY) {
 
 // Post: Returns dir, randPos depending on direction
 int* Board::createChamber(int minX, int maxX, int minY, int maxY) {
+	// Bisect the field with a wall, either horizontally or vertically. Add a single passage through the wall.
 	int randDir = rand() % 4;
 
 	int randPosX = rand() % ((maxX - 2) - (minX + 2) + 1) + (minX + 2);
