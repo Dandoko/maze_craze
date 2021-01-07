@@ -71,7 +71,21 @@ void Board::update() {
 	else {
 		if (m_PathRow.size() > 0 && m_CurPathIndex < m_PathRow.size()) {
 #ifdef RECURSIVE_DIVISION_ON
+			delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
+			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new Wall(false));
+			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(new Creator());
 
+			if (m_CurPathIndex > 0) {
+				delete m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->getUnit();
+				m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->setUnit(NULL);
+			}
+
+			if (m_CurPathIndex + 1 == m_PathRow.size()) {
+				delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getUnit();
+				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(NULL);
+			}
+
+			m_CurPathIndex++;
 #else
 			if (m_CurPathIndex > 0 && m_DeleteWilsonLoop.size() > 0 && m_DeleteWilsonLoop.find(m_CurPathIndex) != m_DeleteWilsonLoop.end()) {
 				for (int i = 0; i < m_DeleteWilsonLoop[m_CurPathIndex].size(); i++) {
@@ -99,7 +113,7 @@ void Board::update() {
 #endif
 		}
 		else {
-			//resetMaze();
+			resetMaze();
 		}
 	}
 }
@@ -526,11 +540,10 @@ void Board::recursiveDivision() {
 	emptyMaze();
 	
 	divide(1, BOARD_COL_SIZE - 2, 1, BOARD_ROW_SIZE - 2);
-
 }
 
 void Board::divide(int minX, int maxX, int minY, int maxY) {
-	if (maxX - minX < 4 || maxY - minY < 4) {
+	if (maxX - minX < 2 || maxY - minY < 2) {
 		return;
 	}
 
@@ -539,12 +552,12 @@ void Board::divide(int minX, int maxX, int minY, int maxY) {
 	// Repeat [the previous step] with the areas on either side of the wall.
 	// Continue, recursively, until the maze reaches the desired resolution.
 	if (chamber[0] == DIR_N || chamber[0] == DIR_S) {
-		divide(minX, chamber[1], minY, maxY);
-		divide(chamber[1], maxX, minY, maxY);
+		divide(minX, chamber[1] - 1, minY, maxY);
+		divide(chamber[1] + 1, maxX, minY, maxY);
 	}
 	else {
-		divide(minX, maxX, minY, chamber[1]);
-		divide(minX, maxX, chamber[1], maxY);
+		divide(minX, maxX, minY, chamber[1] - 1);
+		divide(minX, maxX, chamber[1] + 1, maxY);
 	}
 
 	delete[] chamber;
@@ -555,32 +568,63 @@ int* Board::createChamber(int minX, int maxX, int minY, int maxY) {
 	// Bisect the field with a wall, either horizontally or vertically. Add a single passage through the wall.
 	int randDir = rand() % 4;
 
-	int randPosX = rand() % ((maxX - 2) - (minX + 2) + 1) + (minX + 2);
-	int randPosY = rand() % ((maxY - 2) - (minY + 2) + 1) + (minY + 2);
-	// While either is not odd
-	while (randPosX % 2 != 1 || randPosY % 2 != 1) {
-		randPosX = rand() % ((maxX - 2) - (minX + 2) + 1) + (minX + 2);
-		randPosY = rand() % ((maxY - 2) - (minY + 2) + 1) + (minY + 2);
-	}
-
 	int randPos = -1;
+	int randPosX = rand() % (maxX - minX + 1) + minX;
+	int randPosY = rand() % (maxY - minY + 1) + minY;
+
 	if (randDir == DIR_N || randDir == DIR_S) {
-		for (int i = minY; i <= maxY; i++) {
-			if (i != randPosY) {
-				m_PathRow.push_back(randPosX);
-				m_PathCol.push_back(i);
-			}
+		// While odd
+		while (randPosX % 2 != 0) {
+			// Find random even number
+			randPosX = rand() % (maxX - minX + 1) + minX;
 		}
 		randPos = randPosX;
-	}
-	else if (randDir == DIR_E || randDir == DIR_W) {
-		for (int j = minX; j <= maxX; j++) {
-			if (j != randPosX) {
-				m_PathRow.push_back(j);
-				m_PathCol.push_back(randPosY);
+
+		// If the end point of the current wall is covering up the open passage in another wall
+		if (minY - 1 >= 1 && m_Maze[minY - 1][randPosX]->getCell()->getIsVisited()) {
+			randPosY = minY;
+		}
+		else if (maxY + 1 <= BOARD_ROW_SIZE - 2 && m_Maze[maxY + 1][randPosX]->getCell()->getIsVisited()) {
+			randPosY = maxY;
+		}
+
+		// Creating the wall
+		for (int i = minY; i <= maxY; i++) {
+			if (i != randPosY) {
+				m_PathRow.push_back(i);
+				m_PathCol.push_back(randPosX);
+			}
+			else {
+				m_Maze[i][randPosX]->getCell()->setIsVisited(true);
 			}
 		}
+	}
+	else {
+		// While odd
+		while (randPosY % 2 != 0) {
+			// Find random even number
+			randPosY = rand() % (maxY - minY + 1) + minY;
+		}
 		randPos = randPosY;
+
+		// If the end point of the current wall is covering up the open passage in another wall
+		if (minX - 1 >= 1 && m_Maze[randPosY][minX - 1]->getCell()->getIsVisited()) {
+			randPosX = minX;
+		}
+		else if (maxX + 1 <= BOARD_COL_SIZE - 2 && m_Maze[randPosY][maxX + 1]->getCell()->getIsVisited()) {
+			randPosX = maxX;
+		}
+
+		// Creating the wall
+		for (int j = minX; j <= maxX; j++) {
+			if (j != randPosX) {
+				m_PathRow.push_back(randPosY);
+				m_PathCol.push_back(j);
+			}
+			else {
+				m_Maze[randPosY][j]->getCell()->setIsVisited(true);
+			}
+		}
 	}
 
 	int* chamber = new int [2];
