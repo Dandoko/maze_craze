@@ -4,13 +4,16 @@
 class Loop;
 class Maze;
 class KeyboardInput;
+class Renderer;
+class StateManager;
 
 class Manager {
 private:
 	static Manager* sManagerInstance;
-	Maze* m_Maze;
-	Loop* m_Loop;
 	KeyboardInput* m_KeyboardInput;
+	StateManager* m_StateManager;
+	Renderer* m_Renderer;
+	Loop* m_Loop;
 
 	Manager();
 	Manager(const Manager&) = delete;
@@ -19,6 +22,8 @@ private:
 public:
 	static Manager* getManagerInstance();
 	static void destoryManagerInstance();
+
+	StateManager* getStateManager();
 
 	void start();
 	void update();
