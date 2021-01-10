@@ -41,7 +41,7 @@ void Manager::start() {
 }
 
 void Manager::update() {
-	if (m_KeyboardInput->getSpacebarClicked()) m_StateManager->getMaze()->update();
+	if (m_KeyboardInput->getSpacebarClicked()) m_StateManager->update();
 	m_KeyboardInput->update();
 }
 
