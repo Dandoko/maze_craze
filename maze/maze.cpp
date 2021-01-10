@@ -7,6 +7,7 @@ using namespace std;
 
 Maze::Maze() {
 	m_Board = new Board();
+	m_MazeState = MazeState::GENERATING;
 }
 
 Maze::~Maze() {

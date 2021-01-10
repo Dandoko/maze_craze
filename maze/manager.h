@@ -23,6 +23,7 @@ public:
 	static Manager* getManagerInstance();
 	static void destoryManagerInstance();
 
+	KeyboardInput* getKeyboardInput();
 	StateManager* getStateManager();
 
 	void start();

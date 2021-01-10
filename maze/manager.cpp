@@ -13,8 +13,8 @@ Manager* Manager::sManagerInstance = NULL;
 
 Manager::Manager() {
 	m_KeyboardInput = new KeyboardInput();
-	m_StateManager = new StateManager();
-
+	
+	m_StateManager = new StateManager(this);
 	m_Loop = new Loop(this);
 	m_Renderer = new Renderer(this);
 }
@@ -32,6 +32,10 @@ void Manager::destoryManagerInstance() {
 	sManagerInstance = NULL;
 }
 
+KeyboardInput* Manager::getKeyboardInput() {
+	return m_KeyboardInput;
+}
+
 StateManager* Manager::getStateManager() {
 	return m_StateManager;
 }
@@ -41,7 +45,7 @@ void Manager::start() {
 }
 
 void Manager::update() {
-	if (m_KeyboardInput->getSpacebarClicked()) m_StateManager->update();
+	m_StateManager->update();
 	m_KeyboardInput->update();
 }
 

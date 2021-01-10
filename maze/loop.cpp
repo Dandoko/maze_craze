@@ -5,6 +5,7 @@
 #include "loop.h"
 #include "timer.h"
 #include "manager.h"
+#include "state_manager.h"
 
 using namespace std;
 
@@ -24,6 +25,13 @@ void Loop::start() {
 }
 
 void Loop::run() {
+	// Refreshes the console
+	while (m_Manager->getStateManager()->getState() == State::MAIN_MENU) {
+		m_Manager->render();
+		m_Manager->update();
+		system("cls");
+	}
+
 	m_IsRunning = true;
 
 	m_Timer->resetStartTime();
@@ -60,6 +68,7 @@ void Loop::run() {
 		if (render) {
 			frames++;
 
+			// Replaces the characters in the console (doesn't refresh the console)
 			COORD cursorPosition;
 			cursorPosition.X = 0;
 			cursorPosition.Y = 0;

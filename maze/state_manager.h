@@ -3,24 +3,29 @@
 
 class Maze;
 class MainMenu;
+class Manager;
 
 enum class State {
 	MAIN_MENU,
-	GENERATE,
-	SOLVE
+	MAZE
 };
 
 class StateManager {
 private:
+	Manager* m_Manager;
 	State m_State;
 	Maze* m_Maze;
 	MainMenu* m_MainMenu;
 public:
-	StateManager();
+	StateManager(Manager* manager);
 	StateManager(const StateManager&) = delete;
 	virtual ~StateManager();
 
+	Manager* getManager();
+	State getState();
+	void setState(State state);
 	Maze* getMaze();
+	MainMenu* getMainMenu();
 
 	void update();
 };
