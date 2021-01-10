@@ -1,9 +1,14 @@
 #ifndef STATE_MANAGER_H
 #define STATE_MANAGER_H
 
-enum State;
 class Maze;
 class MainMenu;
+
+enum class State {
+	MAIN_MENU,
+	GENERATE,
+	SOLVE
+};
 
 class StateManager {
 private:
