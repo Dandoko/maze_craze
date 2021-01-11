@@ -34,6 +34,15 @@ MainMenu* StateManager::getMainMenu() {
 	return m_MainMenu;
 }
 
+void StateManager::render() {
+	if (m_State == State::MAIN_MENU) {
+		m_MainMenu->render();
+	}
+	else {
+		m_Maze->render();
+	}
+}
+
 void StateManager::update() {
 	if (m_State == State::MAIN_MENU) {
 		m_MainMenu->update();
@@ -41,6 +50,10 @@ void StateManager::update() {
 	else {
 		m_Maze->update();
 	}
+}
+
+bool StateManager::inMainMenu() {
+	return m_State == State::MAIN_MENU;
 }
 
 void StateManager::setAlgorithm(int algoNum) {

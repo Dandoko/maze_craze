@@ -27,7 +27,10 @@ public:
 	Maze* getMaze();
 	MainMenu* getMainMenu();
 
+	void render();
 	void update();
+	
+	bool inMainMenu();
 	void setAlgorithm(int algoNum);
 };
 

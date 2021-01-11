@@ -69,9 +69,6 @@
     <ClCompile Include="keyboard_input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="state_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,9 +126,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="keyboard_input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="state_manager.h">

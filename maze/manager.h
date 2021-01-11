@@ -4,7 +4,6 @@
 class Loop;
 class Maze;
 class KeyboardInput;
-class Renderer;
 class StateManager;
 
 class Manager {
@@ -12,7 +11,6 @@ private:
 	static Manager* sManagerInstance;
 	KeyboardInput* m_KeyboardInput;
 	StateManager* m_StateManager;
-	Renderer* m_Renderer;
 	Loop* m_Loop;
 
 	Manager();
@@ -29,6 +27,8 @@ public:
 	void start();
 	void update();
 	void render();
+
+	bool inMainMenu();
 };
 
 #endif
