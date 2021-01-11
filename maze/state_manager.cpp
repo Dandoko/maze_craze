@@ -42,3 +42,7 @@ void StateManager::update() {
 		m_Maze->update();
 	}
 }
+
+void StateManager::setAlgorithm(int algoNum) {
+	m_Maze->setAlgorithm(algoNum);
+}

@@ -28,6 +28,7 @@ public:
 	MainMenu* getMainMenu();
 
 	void update();
+	void setAlgorithm(int algoNum);
 };
 
 #endif

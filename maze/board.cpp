@@ -26,6 +26,8 @@ Board::Board() {
 		}
 	}
 
+	m_Algorithm = Algorithm::RANDOMIZED_DFS;
+
 	m_CurPathIndex = 0;
 	m_PathCreated = false;
 	m_WallIndex = 0;
@@ -46,6 +48,22 @@ Board::~Board() {
 
 	delete *m_Maze;
 	*m_Maze = NULL;
+}
+
+void Board::setAlgorithm(int algoNum) {
+	switch (algoNum) {
+		case 1:
+			m_Algorithm = Algorithm::RANDOMIZED_DFS;
+			break;
+		case 2:
+			m_Algorithm = Algorithm::RANDOMIZED_PRIM;
+			break;
+		case 3:
+			m_Algorithm = Algorithm::WILSON;
+			break;
+		default:
+			m_Algorithm = Algorithm::RECURSIVE_DIVISION;
+	}
 }
 
 void Board::printMaze() {
@@ -71,38 +89,38 @@ void Board::update() {
 	}
 	else {
 		if (m_PathRow.size() > 0 && m_CurPathIndex < m_PathRow.size()) {
-#ifdef RECURSIVE_DIVISION_ON
-			for (int i = 0; i < m_WallIndices.at(m_WallIndex); i++) {
+			if (m_Algorithm == Algorithm::RECURSIVE_DIVISION) {
+				for (int i = 0; i < m_WallIndices.at(m_WallIndex); i++) {
+					delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
+					m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new Wall(false));
+					m_CurPathIndex++;
+				}
+				m_WallIndex++;
+			}
+			else {
+				if (m_CurPathIndex > 0 && m_DeleteWilsonLoop.size() > 0 && m_DeleteWilsonLoop.find(m_CurPathIndex) != m_DeleteWilsonLoop.end()) {
+					for (int i = 0; i < m_DeleteWilsonLoop[m_CurPathIndex].size(); i++) {
+						delete m_DeleteWilsonLoop[m_CurPathIndex].at(i)->getCell();
+						m_DeleteWilsonLoop[m_CurPathIndex].at(i)->setCell(new Wall(false));
+					}
+				}
+
 				delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
-				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new Wall(false));
+				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new EmptyPath());
+				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(new Creator());
+
+				if (m_CurPathIndex > 0) {
+					delete m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->getUnit();
+					m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->setUnit(NULL);
+				}
+
+				if (m_CurPathIndex + 1 == m_PathRow.size()) {
+					delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getUnit();
+					m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(NULL);
+				}
+
 				m_CurPathIndex++;
 			}
-			m_WallIndex++;
-#else
-			if (m_CurPathIndex > 0 && m_DeleteWilsonLoop.size() > 0 && m_DeleteWilsonLoop.find(m_CurPathIndex) != m_DeleteWilsonLoop.end()) {
-				for (int i = 0; i < m_DeleteWilsonLoop[m_CurPathIndex].size(); i++) {
-					delete m_DeleteWilsonLoop[m_CurPathIndex].at(i)->getCell();
-					m_DeleteWilsonLoop[m_CurPathIndex].at(i)->setCell(new Wall(false));
-				}
-			}
-
-			delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getCell();
-			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setCell(new EmptyPath());
-			m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(new Creator());
-
-			if (m_CurPathIndex > 0) {
-				delete m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->getUnit();
-				m_Maze[m_PathRow.at(m_CurPathIndex - 1)][m_PathCol.at(m_CurPathIndex - 1)]->setUnit(NULL);
-			}
-
-			if (m_CurPathIndex + 1 == m_PathRow.size()) {
-				delete m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->getUnit();
-				m_Maze[m_PathRow.at(m_CurPathIndex)][m_PathCol.at(m_CurPathIndex)]->setUnit(NULL);
-			}
-
-			m_CurPathIndex++;
-
-#endif
 		}
 		else {
 			resetMaze();
@@ -145,10 +163,19 @@ void Board::emptyMaze() {
 }
 
 void Board::generateMaze() {
-	//randomizedDFS();
-	//randomizedPrim();
-	//wilson();
-	recursiveDivision();
+	switch (m_Algorithm) {
+		case Algorithm::RANDOMIZED_DFS:
+			randomizedDFS();
+			break;
+		case Algorithm::RANDOMIZED_PRIM:
+			randomizedPrim();
+			break;
+		case Algorithm::WILSON:
+			wilson();
+			break;
+		default:
+			recursiveDivision();
+	}
 }
 
 int Board::roundOffset(int offset) {

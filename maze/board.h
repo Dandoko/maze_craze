@@ -15,9 +15,14 @@
 #define DIR_S 2
 #define DIR_W 3
 
-#define RECURSIVE_DIVISION_ON
-
 class Tile;
+
+enum class Algorithm {
+	RANDOMIZED_DFS,
+	RANDOMIZED_PRIM,
+	WILSON,
+	RECURSIVE_DIVISION
+};
 
 class Board {
 private:
@@ -25,6 +30,8 @@ private:
 	int m_ColSize;
 
 	Tile*** m_Maze;
+
+	Algorithm m_Algorithm;
 
 	std::vector<int> m_PathRow;
 	std::vector<int> m_PathCol;
@@ -46,6 +53,8 @@ public:
 	Board();
 	Board(const Board&) = delete;
 	virtual ~Board();
+
+	void setAlgorithm(int algoNum);
 
 	void printMaze();
 	void update();

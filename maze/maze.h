@@ -21,6 +21,7 @@ public:
 
 	void update();
 	void render();
+	void setAlgorithm(int algoNum);
 };
 
 #endif

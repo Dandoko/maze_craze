@@ -2,8 +2,6 @@
 
 #include "main_menu.h"
 #include "state_manager.h"
-#include "manager.h"
-#include "keyboard_input.h"
 
 using namespace std;
 
@@ -26,24 +24,40 @@ void MainMenu::render() {
 		cout << "\t\tMaze Generation" << endl;
 		cout << "\t\tSelect a maze type you want to generate!" << endl << endl;
 
-		cout << "\t\t1. Test Algorithm" << endl;
+		cout << "\t\t1. Randomized DFS (Recursive Backtracker)" << endl;
+		cout << "\t\t2. Randomized Prim's Algorithm" << endl;
+		cout << "\t\t3. Wilson's Algorithm" << endl;
+		cout << "\t\t4. Recursive Division" << endl;
 	}
 }
 
 void MainMenu::update() {
 	if (m_MainMenuState == MainMenuState::WELCOME) {
-		char testA;
-		cin >> testA;
+		char startA;
+		cin >> startA;
 
-		if (testA == 'a') {
+		if (startA == 'a') {
 			m_MainMenuState = MainMenuState::SELECT;
 		}
 	}
 	else {
-		char test1;
-		cin >> test1;
+		char genAlgoNum;
+		cin >> genAlgoNum;
 
-		if (test1 == '1') {
+		if (genAlgoNum == '1') {
+			m_StateManager->setAlgorithm(1);
+			m_StateManager->setState(State::MAZE);
+		}
+		else if (genAlgoNum == '2') {
+			m_StateManager->setAlgorithm(2);
+			m_StateManager->setState(State::MAZE);
+		}
+		else if (genAlgoNum == '3') {
+			m_StateManager->setAlgorithm(3);
+			m_StateManager->setState(State::MAZE);
+		}
+		else if (genAlgoNum == '4') {
+			m_StateManager->setAlgorithm(4);
 			m_StateManager->setState(State::MAZE);
 		}
 	}

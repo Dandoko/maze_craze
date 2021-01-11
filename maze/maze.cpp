@@ -25,3 +25,7 @@ void Maze::update() {
 void Maze::render() {
 	m_Board->printMaze();
 }
+
+void Maze::setAlgorithm(int algoNum) {
+	m_Board->setAlgorithm(algoNum);
+}
